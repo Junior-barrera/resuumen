@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Resumen: Funciones de Activación</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        .responsive-wrapper {
+            overflow-x: auto;
+        }
+        
+        /* Login Styles */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .login-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .login-warning {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #ffcdd2;
+            display: none;
+        }
+        
+        .content {
+            display: none;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            margin: 30px 0 10px 0;
+            border-radius: 8px;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .classification-title {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+        
+        .regression-title {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        .activation-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .star {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .code {
+            background: #f1f3f4;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d73a49;
+            border: 1px solid #d0d7de;
+        }
+        
+        .range {
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .loss {
+            background: #e8f5e8;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #2e7d32;
+        }
+        
+        .use-case {
+            font-style: italic;
+            color: #5f6368;
+        }
+        
+        .notes {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .notes h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .highlight-row {
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05)) !important;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .function-graph {
+            width: 80px;
+            height: 50px;
+            display: inline-block;
+            margin: 2px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .function-graph:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-color: #4CAF50;
+        }
+        
+        .activation-visual {
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        /* Modal para el gráfico grande */
+        .graph-modal {
+            display: none;
+            position: fixed;
+            z-index: 20000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .graph-modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            z-index: 21000;
+        }
+        
+        .close-modal:hover {
+            color: #000;
+        }
+        
+        .large-graph {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin: 20px 0;
+        }
+        
+        .graph-info {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #d63384;
+            text-align: center;
+        }
+        
+        .coordinates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .coord-point {
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            table {
+                font-size: 0.85em;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+            
+            .graph-modal-content {
+                width: 95%;
+                margin: 5% auto;
+                padding: 20px;
+            }
+        }
+        
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80% { transform: translateX(0); }
+            10%, 30%, 50%, 70% { transform: translateX(-10px); }
+            15%, 35%, 55%, 75% { transform: translateX(10px); }
+        }
+         Nuevos estilos para las mejoras */
+        .framework-selector {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .framework-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .framework-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+        .calculator {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .calculator input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 100px;
+        }
+        .calculator button {
+            padding: 10px 15px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .comparison-table {
+            width: 100%;
+            margin: 25px 0;
+        }
+        .comparison-table th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+        }
+        .comparison-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-container">
+            <div class="login-title">🔒 Acceso Restringido</div>
+            <div class="login-warning">
+                ⚠️ Esta es documentación técnica especializada.<br>
+                Ingrese la contraseña para continuar.
+            </div>
+            <input type="password" 
+                   class="password-input" 
+                   id="passwordInput" 
+                   placeholder="Ingrese la contraseña..."
+                   onkeypress="checkEnter(event)">
+            <button class="login-button" onclick="checkPassword()">
+                🚀 Acceder
+            </button>
+            <div class="error-message" id="errorMessage">
+                ❌ Contraseña incorrecta. Intente nuevamente.
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para gráfico grande -->
+    <div id="graphModal" class="graph-modal">
+        <div class="graph-modal-content">
+            <span class="close-modal" onclick="closeGraphModal()">&times;</span>
+            <h2 id="modalTitle">Función de Activación</h2>
+            <canvas id="largeGraph" class="large-graph"></canvas>
+            <div class="graph-info">
+                <div class="formula" id="formulaDisplay"></div>
+                <div><strong>Rango:</strong> <span id="rangeDisplay"></span></div>
+                <div><strong>Dominio:</strong> <span id="domainDisplay"></span></div>
+                <div><strong>Características:</strong> <span id="characteristicsDisplay"></span></div>
+                
+                <h4>📍 Puntos de Referencia:</h4>
+                <div class="coordinates" id="coordinatesDisplay">
+                    <!-- Se llenan dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content" id="mainContent">
+        <div class="container">
+            <h1>🎯 Tabla Resumen Completa: Funciones de Activación</h1>
+             <!-- Pestañas -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('tab-summary')">📋 Resumen</button>
+                <button class="tab-btn" onclick="openTab('tab-comparison')">📊 Comparación</button>
+                <button class="tab-btn" onclick="openTab('tab-tools')">🛠️ Herramientas</button>
+            </div>
+            <div id="tab-comparison" class="tab-content">
+                <h2>📊 Comparación Técnica</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Función</th>
+                            <th>Derivada</th>
+                            <th>Ventajas</th>
+                            <th>Desventajas</th>
+                            <th>Inicialización Recomendada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sigmoid</strong></td>
+                            <td>σ(x)(1-σ(x))</td>
+                            <td>Output interpretable (probabilidad)</td>
+                            <td>Vanishing gradient</td>
+                            <td>Xavier/Glorot</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ReLU</strong></td>
+                            <td>1 si x > 0, 0 si no</td>
+                            <td>Eficiente computacionalmente</td>
+                            <td>Dying ReLU</td>
+                            <td>He Normal</td>
+                        </tr>
+                        <!-- ... más filas ... -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="tab-tools" class="tab-content">
+
+
+                <!-- Calculadora Interactiva -->
+                <div class="calculator">
+                    <h3>🔢 Calculadora de Activación</h3>
+                    <input type="number" id="xValue" placeholder="Ingresa x" step="0.1" value="1.0">
+                    <button onclick="calculateActivations()">Calcular</button>
+                    <div id="activationResults" style="margin-top: 15px;">
+                        <!-- Resultados aparecerán aquí -->
+                    </div>
+                </div>
+            </div>
+            <div class="section-title classification-title">
+                📊 CLASIFICACIÓN
+            </div>
+
+            <div class="responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo de Problema</th>
+                            <th>Función de Activación</th>
+                            <th>Gráfico</th>
+                            <th>Código</th>
+                            <th>Rango</th>
+                            <th>Función de Pérdida</th>
+                            <th>Caso de Uso</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td><strong>Clasificación Binaria</strong><br>(2 clases)</td>
+                            <td><span class="activation-name">Sigmoid</span> <span class="star">⭐</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="sigmoid-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='sigmoid')</span></td>
+                            <td><span class="range">[0, 1]</span></td>
+                            <td><span class="loss">binary_crossentropy</span></td>
+                            <td class="use-case">Spam/No spam, Gato/Perro, Sí/No</td>
+                            <td>Interpretación directa como probabilidad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clasificación Binaria</strong><br>(alternativa)</td>
+                            <td><span class="activation-name">Tanh</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="tanh-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='tanh')</span></td>
+                            <td><span class="range">[-1, 1]</span></td>
+                            <td><span class="loss">Pérdida personalizada</span></td>
+                            <td class="use-case">Output centrado en 0</td>
+                            <td>Menos común, requiere transformación</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td><strong>Clasificación Multiclase</strong><br>(>2 clases exclusivas)</td>
+                            <td><span class="activation-name">Softmax</span> <span class="star">⭐</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="softmax-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(n_clases, activation='softmax')</span></td>
+                            <td><span class="range">[0, 1] suma=1</span></td>
+                            <td><span class="loss">categorical_crossentropy</span></td>
+                            <td class="use-case">Iris, CIFAR-10, Clasificación de texto</td>
+                            <td>Garantiza que probabilidades sumen 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clasificación Multiclase</strong><br>(con pérdida especial)</td>
+                            <td><span class="activation-name">Linear</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="linear-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(n_clases, activation='linear')</span></td>
+                            <td><span class="range">(-∞, +∞)</span></td>
+                            <td><span class="loss">hinge, squared_hinge</span></td>
+                            <td class="use-case">SVM-style, margin-based</td>
+                            <td>Usado con pérdidas específicas</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td><strong>Clasificación Multilabel</strong><br>(múltiples etiquetas)</td>
+                            <td><span class="activation-name">Sigmoid</span> <span class="star">⭐</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="sigmoid2-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(n_labels, activation='sigmoid')</span></td>
+                            <td><span class="range">[0, 1] c/etiqueta</span></td>
+                            <td><span class="loss">binary_crossentropy</span></td>
+                            <td class="use-case">Tags de imagen, Géneros musicales</td>
+                            <td>Cada etiqueta es independiente</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section-title regression-title">
+                📈 REGRESIÓN
+            </div>
+            
+            <div class="responsive-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo de Problema</th>
+                            <th>Función de Activación</th>
+                            <th>Gráfico</th>
+                            <th>Código</th>
+                            <th>Rango</th>
+                            <th>Función de Pérdida</th>
+                            <th>Caso de Uso</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td><strong>Regresión General</strong><br>(valores continuos)</td>
+                            <td><span class="activation-name">Linear/None</span> <span class="star">⭐</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="linear2-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1) o Dense(1, activation='linear')</span></td>
+                            <td><span class="range">(-∞, +∞)</span></td>
+                            <td><span class="loss">mse, mae, huber</span></td>
+                            <td class="use-case">Precio casa, temperatura, salarios</td>
+                            <td>Sin restricciones en el rango</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión [0,1]</strong><br>(porcentajes/probabilidades)</td>
+                            <td><span class="activation-name">Sigmoid</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="sigmoid3-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='sigmoid')</span></td>
+                            <td><span class="range">[0, 1]</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">% humedad, probabilidad lluvia</td>
+                            <td>Para valores normalizados</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión [-1,1]</strong><br>(centrado en cero)</td>
+                            <td><span class="activation-name">Tanh</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="tanh2-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='tanh')</span></td>
+                            <td><span class="range">[-1, 1]</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">Correlaciones, cambios relativos</td>
+                            <td>Valores centrados en 0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión Positiva</strong><br>(solo valores ≥ 0)</td>
+                            <td><span class="activation-name">ReLU</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="relu-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='relu')</span></td>
+                            <td><span class="range">[0, +∞)</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">Edad, peso, distancia, ventas</td>
+                            <td>⚠️ Puede "morir" (output siempre 0)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión Positiva</strong><br>(alternativa suave)</td>
+                            <td><span class="activation-name">Softplus</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="softplus-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='softplus')</span></td>
+                            <td><span class="range">[0, +∞)</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">Como ReLU pero más suave</td>
+                            <td>Siempre diferenciable, nunca "muere"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión con ELU</strong><br>(negativos pequeños)</td>
+                            <td><span class="activation-name">ELU</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="elu-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(1, activation='elu')</span></td>
+                            <td><span class="range">(-α, +∞)</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">Cuando necesitas negativos limitados</td>
+                            <td>α típicamente = 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regresión Múltiple</strong><br>(múltiples outputs)</td>
+                            <td><span class="activation-name">Linear/Mixed</span></td>
+                            <td class="activation-visual">
+                                <canvas class="function-graph" id="mixed-graph"></canvas>
+                            </td>
+                            <td><span class="code">Dense(n_outputs)</span></td>
+                            <td><span class="range">Según problema</span></td>
+                            <td><span class="loss">mse, mae</span></td>
+                            <td class="use-case">Precio + área + habitaciones</td>
+                            <td>Pueden usarse activaciones diferentes por output</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="notes">
+                <h3>💡 Consejos Clave:</h3>
+                <ul>
+                    <li><strong>Clasificación:</strong> Usa siempre <code>softmax</code> para multiclase y <code>sigmoid</code> para binaria/multilabel</li>
+                    <li><strong>Regresión:</strong> Empieza con <code>linear</code> y usa activaciones restringidas solo si conoces los límites</li>
+                    <li><strong>Errores comunes:</strong> No uses <code>relu</code> en clasificación ni <code>softmax</code> con pérdida binaria</li>
+                    <li><strong>Datos:</strong> Normaliza siempre tus datos cuando uses activaciones con rango limitado</li>
+                </ul>
+            </div>
+            
+            <div class="notes" style="background: #e3f2fd; border-color: #2196f3;">
+                <h3 style="color: #1565c0;">🎯 Casos Especiales Comunes:</h3>
+                <ul>
+                    <li><strong>YOLO (detección):</strong> <code>sigmoid</code> para coordenadas + <code>sigmoid</code> para confianza + <code>softmax</code> para clases</li>
+                    <li><strong>Autoencoder:</strong> <code>sigmoid</code> si entrada está en [0,1], <code>tanh</code> si está en [-1,1]</li>
+                    <li><strong>GAN:</strong> <code>tanh</code> en generador, <code>sigmoid</code> en discriminador</li>
+                    <li><strong>Ratings (1-5):</strong> <code>sigmoid</code> y escalar, o <code>softmax</code> tratando como clases</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de las funciones de activación
+        const functionConfigs = {
+            'sigmoid': {
+                func: (x) => 1 / (1 + Math.exp(-x)),
+                range: [-5, 5],
+                color: '#4CAF50',
+                title: 'Sigmoid',
+                formula: 'f(x) = 1 / (1 + e^(-x))',
+                outputRange: '[0, 1]',
+                domain: '(-∞, +∞)',
+                characteristics: 'Monotónica creciente, suave, forma de S',
+                points: [
+                    { x: -2, y: 0.12, desc: 'Cerca de 0' },
+                    { x: -1, y: 0.27, desc: 'Transición inferior' },
+                    { x: 0, y: 0.5, desc: 'Punto medio' },
+                    { x: 1, y: 0.73, desc: 'Transición superior' },
+                    { x: 2, y: 0.88, desc: 'Cerca de 1' }
+                ]
+            },
+            'tanh': {
+                func: (x) => Math.tanh(x),
+                range: [-3, 3],
+                color: '#2196F3',
+                title: 'Tanh (Tangente Hiperbólica)',
+                formula: 'f(x) = (e^x - e^(-x)) / (e^x + e^(-x))',
+                outputRange: '[-1, 1]',
+                domain: '(-∞, +∞)',
+                characteristics: 'Monotónica creciente, centrada en 0, forma de S',
+                points: [
+                    { x: -2, y: -0.96, desc: 'Cerca de -1' },
+                    { x: -1, y: -0.76, desc: 'Transición inferior' },
+                    { x: 0, y: 0, desc: 'Centro (0,0)' },
+                    { x: 1, y: 0.76, desc: 'Transición superior' },
+                    { x: 2, y: 0.96, desc: 'Cerca de 1' }
+                ]
+            },
+            'relu': {
+                func: (x) => Math.max(0, x),
+                range: [-2, 3],
+                color: '#F44336',
+                title: 'ReLU (Rectified Linear Unit)',
+                formula: 'f(x) = max(0, x)',
+                outputRange: '[0, +∞)',
+                domain: '(-∞, +∞)',
+                characteristics: 'No diferenciable en x=0, puede "morir"',
+                points: [
+                    { x: -2, y: 0, desc: 'Región negativa' },
+                    { x: -1, y: 0, desc: 'Región negativa' },
+                    { x: 0, y: 0, desc: 'Punto de quiebre' },
+                    { x: 1, y: 1, desc: 'Región positiva' },
+                    { x: 2, y: 2, desc: 'Región positiva' }
+                ]
+            },
+            'softplus': {
+                func: (x) => Math.log(1 + Math.exp(Math.min(x, 20))),
+                range: [-3, 3],
+                color: '#E91E63',
+                title: 'Softplus',
+                formula: 'f(x) = ln(1 + e^x)',
+                outputRange: '[0, +∞)',
+                domain: '(-∞, +∞)',
+                characteristics: 'Diferenciable en todas partes, versión suave de ReLU',
+                points: [
+                    { x: -2, y: 0.13, desc: 'Cerca de 0' },
+                    { x: -1, y: 0.31, desc: 'Transición' },
+                    { x: 0, y: 0.69, desc: 'Punto medio' },
+                    { x: 1, y: 1.31, desc: 'Crecimiento' },
+                    { x: 2, y: 2.13, desc: 'Aproxima a x' }
+                ]
+            },
+            'elu': {
+                func: (x) => x >= 0 ? x : Math.exp(x) - 1,
+                range: [-3, 3],
+                color: '#9C27B0',
+                title: 'ELU (Exponential Linear Unit)',
+                formula: 'f(x) = x si x ≥ 0, e^x - 1 si x < 0',
+                outputRange: '(-1, +∞)',
+                domain: '(-∞, +∞)',
+                characteristics: 'Negativos limitados, evita neurona muerta',
+                points: [
+                    { x: -2, y: -0.86, desc: 'Región negativa' },
+                    { x: -1, y: -0.63, desc: 'Transición' },
+                    { x: 0, y: 0, desc: 'Punto de cambio' },
+                    { x: 1, y: 1, desc: 'Región lineal' },
+                    { x: 2, y: 2, desc: 'Región lineal' }
+                ]
+            },
+            'linear': {
+                func: (x) => x,
+                range: [-3, 3],
+                color: '#607D8B',
+                title: 'Linear (Identidad)',
+                formula: 'f(x) = x',
+                outputRange: '(-∞, +∞)',
+                domain: '(-∞, +∞)',
+                characteristics: 'Sin transformación, preserva el valor original',
+                points: [
+                    { x: -2, y: -2, desc: 'Pendiente = 1' },
+                    { x: -1, y: -1, desc: 'Pendiente = 1' },
+                    { x: 0, y: 0, desc: 'Origen' },
+                    { x: 1, y: 1, desc: 'Pendiente = 1' },
+                    { x: 2, y: 2, desc: 'Pendiente = 1' }
+                ]
+            },
+            'softmax': {
+                func: (x) => Math.exp(x) / (Math.exp(x) + Math.exp(0.5) + Math.exp(-0.5)), // Aproximación para visualización
+                range: [-3, 3],
+                color: '#FF5722',
+                title: 'Softmax (aproximación)',
+                formula: 'f(xi) = e^xi / Σ(e^xj) para j=1 to K',
+                outputRange: '[0, 1] con Σ = 1',
+                domain: '(-∞, +∞)',
+                characteristics: 'Normalización probabilística, suma = 1',
+                points: [
+                    { x: -2, y: 0.09, desc: 'Probabilidad baja' },
+                    { x: -1, y: 0.24, desc: 'Probabilidad media-baja' },
+                    { x: 0, y: 0.67, desc: 'Probabilidad alta' },
+                    { x: 1, y: 0.73, desc: 'Probabilidad muy alta' },
+                    { x: 2, y: 0.84, desc: 'Probabilidad máxima' }
+                ]
+            },
+            'mixed': {
+                func: (x) => x * 0.5 + 0.25, // Función de ejemplo para múltiples outputs
+                range: [-2, 2],
+                color: '#795548',
+                title: 'Múltiples Outputs (ejemplo)',
+                formula: 'Diferentes funciones por output',
+                outputRange: 'Variable según función',
+                domain: 'Variable según función',
+                characteristics: 'Combinación de diferentes activaciones',
+                points: [
+                    { x: -1, y: -0.25, desc: 'Output 1' },
+                    { x: -0.5, y: 0, desc: 'Output 2' },
+                    { x: 0, y: 0.25, desc: 'Output 3' },
+                    { x: 0.5, y: 0.5, desc: 'Output 4' },
+                    { x: 1, y: 0.75, desc: 'Output 5' }
+                ]
+            }
+        };
+
+        // Función para dibujar gráfico pequeño
+        function drawSmallGraph(canvasId, funcName) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const config = functionConfigs[funcName];
+            if (!config) return;
+
+            canvas.width = 80;
+            canvas.height = 50;
+
+            ctx.clearRect(0, 0, 80, 50);
+            ctx.strokeStyle = config.color;
+            ctx.lineWidth = 2;
+
+            const [xMin, xMax] = config.range;
+            const points = [];
+            
+            // Calcular puntos de la función
+            for (let i = 0; i <= 40; i++) {
+                const x = xMin + (xMax - xMin) * i / 40;
+                const y = config.func(x);
+                const canvasX = (x - xMin) / (xMax - xMin) * 80;
+                const canvasY = 50 - Math.min(Math.max((y - (-2)) / 4 * 50, 0), 50);
+                points.push({x: canvasX, y: canvasY});
+            }
+
+            // Dibujar la función
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+
+            // Agregar evento click para abrir modal
+            canvas.style.cursor = 'pointer';
+            canvas.onclick = () => openGraphModal(funcName);
+        }
+
+        // Función para abrir modal con gráfico grande
+        function openGraphModal(funcName) {
+            const modal = document.getElementById('graphModal');
+            const config = functionConfigs[funcName];
+            
+            document.getElementById('modalTitle').textContent = config.title;
+            document.getElementById('formulaDisplay').textContent = config.formula;
+            document.getElementById('rangeDisplay').textContent = config.outputRange;
+            document.getElementById('domainDisplay').textContent = config.domain;
+            document.getElementById('characteristicsDisplay').textContent = config.characteristics;
+            
+            // Mostrar puntos de referencia
+            const coordsContainer = document.getElementById('coordinatesDisplay');
+            coordsContainer.innerHTML = '';
+            config.points.forEach(point => {
+                const div = document.createElement('div');
+                div.className = 'coord-point';
+                div.innerHTML = `<strong>(${point.x}, ${point.y.toFixed(2)})</strong><br><small>${point.desc}</small>`;
+                coordsContainer.appendChild(div);
+            });
+            
+            drawLargeGraph(funcName);
+            modal.style.display = 'block';
+        }
+
+        // Función para dibujar gráfico grande
+        function drawLargeGraph(funcName) {
+    const canvas = document.getElementById('largeGraph');
+    if (!canvas) {
+        console.error("Canvas 'largeGraph' no encontrado");
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const config = functionConfigs[funcName];
+    if (!config) {
+        console.error("Configuración no encontrada para:", funcName);
+        return;
+    }
+
+    // Fija un tamaño explícito (evita problemas con CSS)
+    canvas.width = 800;
+    canvas.height = 400;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const padding = 50;
+    const graphWidth = canvas.width - 2 * padding;
+    const graphHeight = canvas.height - 2 * padding;
+
+            // Dibujar ejes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            
+            // Eje X
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Eje Y
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.stroke();
+
+            // Etiquetas de ejes
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            const [xMin, xMax] = config.range;
+            const yMin = -2, yMax = 2;
+            
+            // Etiquetas eje X
+            for (let i = 0; i <= 4; i++) {
+                const x = xMin + (xMax - xMin) * i / 4;
+                const canvasX = padding + graphWidth * i / 4;
+                ctx.fillText(x.toFixed(1), canvasX, canvas.height - padding + 20);
+            }
+            
+            // Etiquetas eje Y
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const y = yMin + (yMax - yMin) * i / 4;
+                const canvasY = canvas.height - padding - graphHeight * i / 4;
+                ctx.fillText(y.toFixed(1), padding - 10, canvasY + 4);
+            }
+
+            // Dibujar grilla
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i <= 4; i++) {
+                const canvasX = padding + graphWidth * i / 4;
+                ctx.beginPath();
+                ctx.moveTo(canvasX, padding);
+                ctx.lineTo(canvasX, canvas.height - padding);
+                ctx.stroke();
+                
+                const canvasY = padding + graphHeight * i / 4;
+                ctx.beginPath();
+                ctx.moveTo(padding, canvasY);
+                ctx.lineTo(canvas.width - padding, canvasY);
+                ctx.stroke();
+            }
+
+            // Dibujar función
+            ctx.strokeStyle = config.color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            let firstPoint = true;
+            for (let i = 0; i <= 200; i++) {
+                const x = xMin + (xMax - xMin) * i / 200;
+                const y = config.func(x);
+                
+                const canvasX = padding + (x - xMin) / (xMax - xMin) * graphWidth;
+                const canvasY = canvas.height - padding - (y - yMin) / (yMax - yMin) * graphHeight;
+                
+                if (canvasY >= padding && canvasY <= canvas.height - padding) {
+                    if (firstPoint) {
+                        ctx.moveTo(canvasX, canvasY);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(canvasX, canvasY);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Dibujar puntos de referencia
+            ctx.fillStyle = config.color;
+            config.points.forEach(point => {
+                const canvasX = padding + (point.x - xMin) / (xMax - xMin) * graphWidth;
+                const canvasY = canvas.height - padding - (point.y - yMin) / (yMax - yMin) * graphHeight;
+                
+                if (canvasY >= padding && canvasY <= canvas.height - padding) {
+                    ctx.beginPath();
+                    ctx.arc(canvasX, canvasY, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            });
+        }
+
+        // Función para cerrar modal
+        function closeGraphModal() {
+            document.getElementById('graphModal').style.display = 'none';
+        }
+
+        // Sistema de autenticación
+        const correctPassword = 'JR2025';
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (password === correctPassword) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Dibujar todos los gráficos pequeños
+                setTimeout(() => {
+                    drawSmallGraph('sigmoid-graph', 'sigmoid');
+                    drawSmallGraph('tanh-graph', 'tanh');
+                    drawSmallGraph('softmax-graph', 'softmax');
+                    drawSmallGraph('linear-graph', 'linear');
+                    drawSmallGraph('sigmoid2-graph', 'sigmoid');
+                    drawSmallGraph('linear2-graph', 'linear');
+                    drawSmallGraph('sigmoid3-graph', 'sigmoid');
+                    drawSmallGraph('tanh2-graph', 'tanh');
+                    drawSmallGraph('relu-graph', 'relu');
+                    drawSmallGraph('softplus-graph', 'softplus');
+                    drawSmallGraph('elu-graph', 'elu');
+                    drawSmallGraph('mixed-graph', 'mixed');
+                }, 100);
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('passwordInput').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.getElementById('passwordInput').style.animation = '';
+                }, 500);
+            }
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+
+        // Event listeners
+        window.onclick = function(event) {
+            const modal = document.getElementById('graphModal');
+            if (event.target === modal) {
+                closeGraphModal();
+            }
+        }
+
+        // Auto-focus en el campo de contraseña
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('passwordInput').focus();
+            updateCodeExamples('tensorflow');
+        });
+          // Nuevas funciones para las mejoras
+        function openTab(tabId) {
+            // Oculta todos los contenidos de pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactiva todos los botones
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Activa la pestaña seleccionada
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function updateCodeExamples(framework) {
+            // Actualiza botones
+            document.querySelectorAll('.framework-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Ejemplo de cómo actualizaría los ejemplos de código
+            const examples = {
+                tensorflow: {
+                    sigmoid: "tf.keras.layers.Dense(1, activation='sigmoid')",
+                    relu: "tf.keras.layers.ReLU()"
+                },
+                pytorch: {
+                    sigmoid: "torch.nn.Sigmoid()",
+                    relu: "torch.nn.ReLU()"
+                },
+                jax: {
+                    sigmoid: "jax.nn.sigmoid(x)",
+                    relu: "jax.nn.relu(x)"
+                }
+            };
+            
+            console.log(`Ejemplos actualizados para ${framework}`);
+            // Aquí iría la lógica para actualizar los ejemplos en el DOM
+        }
+
+        function calculateActivations() {
+            const x = parseFloat(document.getElementById('xValue').value);
+            if (isNaN(x)) return;
+            
+            const results = {
+                sigmoid: 1 / (1 + Math.exp(-x)),
+                relu: Math.max(0, x),
+                tanh: Math.tanh(x),
+                softmax: Math.exp(x) / (Math.exp(x) + Math.exp(0) + Math.exp(-1)) // Simplificado
+            };
+            
+            let html = '<div class="coordinates">';
+            for (const [func, value] of Object.entries(results)) {
+                html += `
+                <div class="coord-point">
+                    <strong>${func}</strong><br>
+                    <span class="code">${value.toFixed(4)}</span>
+                </div>`;
+            }
+            html += '</div>';
+            
+            document.getElementById('activationResults').innerHTML = html;
+        }
+
+    </script>
+</body>
+</html>
